@@ -57,16 +57,9 @@ def create_server_client():
     client.query(q.create_collection({"name": "posts"}))
     client.query(q.create_index(
         {
-            "name": "posts_by_email",
-            "source": q.collection("users"),
-            "terms": [{"field": ["data", "email"]}],
-        }
-    ))
-    client.query(q.create_index(
-        {
-            "name": "posts_by_id",
-            "source": q.collection("users"),
-            "terms": [{"field": ["data", "id"]}],
+            "name": "posts_by_author",
+            "source": q.collection("posts"),
+            "terms": [{"field": ["data", "author"]}],
         }
     ))
 
