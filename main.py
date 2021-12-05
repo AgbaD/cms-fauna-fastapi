@@ -269,9 +269,37 @@ def delete_post(post_id: str, x_access_token: str = Header(None)):
     }
 
 
-# get all posts by user
+# get all posts
 @app.get('/all-posts')
-def all_posts(x_access_token: str = Header(None)):
+def all_posts():
+    try:
+        posts = sc.query(q.paginate(q.match(q.index("posts_index"))))
+        post_rf = []
+        ids = []
+        for i in posts["data"]:
+            post_rf.append(q.get(q.ref(q.collection("posts"), i.id())))
+            ids.append(i.id())
+        posts = sc.query(post_rf)
+        ps = []
+        j = 0
+        for i in posts:
+            i['data']["id"] = ids[j]
+            ps.append(i['data'])
+            j += 1
+        return {
+            'msg': 'success',
+            'data': ps
+        }
+    except:
+        return {
+            'msg': 'error',
+            'details': "Posts not found"
+        }
+
+
+# get all posts by user
+@app.get('/user-posts')
+def get_user_post(x_access_token: str = Header(None)):
     try:
         data = jwt.decode(x_access_token, secret_key,
                           algorithms=['HS256'])
@@ -287,10 +315,29 @@ def all_posts(x_access_token: str = Header(None)):
             'msg': 'error',
             'details': 'User not found'
         }
-    author = resp['data']['name']
+    user_name = resp['data']['name']
     try:
-        result = sc.query(q.get(q.match(q.index("posts_by_author"), author)))
-        print(result)
+        posts = sc.query(q.paginate(q.match(q.index("posts_index"))))
+        post_rf = []
+        ids = []
+        for i in posts["data"]:
+            post_rf.append(q.get(q.ref(q.collection("posts"), i.id())))
+            ids.append(i.id())
+        posts = sc.query(post_rf)
+        ps = []
+        j = 0
+        for i in posts:
+            i['data']["id"] = ids[j]
+            ps.append(i['data'])
+            j += 1
+        posts = []
+        for i in ps:
+            if i['author'] == user_name:
+                posts.append(i)
+        return {
+            'msg': 'success',
+            'data': posts
+        }
     except:
         return {
             'msg': 'error',
@@ -298,13 +345,20 @@ def all_posts(x_access_token: str = Header(None)):
         }
 
 
-
-# get all posts
 # get post by id
-
-
-
-
-
+@app.get('/post/{post_id}')
+def get_post(post_id: str):
+    try:
+        result = sc.query(q.get(q.ref(q.collection("posts"), post_id)))
+    except:
+        return {
+            'msg': 'error',
+            'details': "Post not found"
+        }
+    post = result['data']
+    return {
+        'msg': "success",
+        'data': post
+    }
 
 
