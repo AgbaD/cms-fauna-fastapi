@@ -1,2 +1,2 @@
 # cms-fauna-fasyapi
-Simple CMS Api with fauna and fastapi
+Simple content management system Api with fauna and fastapi
