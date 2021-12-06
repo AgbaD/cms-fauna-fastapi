@@ -24,13 +24,11 @@ class UserLogin(BaseModel):
 
 
 class Post(BaseModel):
-    author: str
     title: str
     content: str
 
 
 class UpdatePost(BaseModel):
-    author: Optional[str] = None
     title: Optional[str] = None
     content: Optional[str] = None
 
@@ -43,7 +41,7 @@ def create_server_client():
     """
     :return: server_client
     """
-    client = FaunaClient(secret=os.environ.get('FAUNA_SERVER_SECRET'))
+    client = FaunaClient(secret="fnAEZmczZcACTLUwK1s910UUxFb4Zz3GePk31s2X")
 
     client.query(q.create_collection({"name": "users"}))
     client.query(q.create_index(
@@ -59,16 +57,9 @@ def create_server_client():
     client.query(q.create_collection({"name": "posts"}))
     client.query(q.create_index(
         {
-            "name": "posts_by_email",
-            "source": q.collection("users"),
-            "terms": [{"field": ["data", "email"]}],
-        }
-    ))
-    client.query(q.create_index(
-        {
-            "name": "posts_by_id",
-            "source": q.collection("users"),
-            "terms": [{"field": ["data", "id"]}],
+            "name": "posts_by_author",
+            "source": q.collection("posts"),
+            "terms": [{"field": ["data", "author"]}],
         }
     ))
 
