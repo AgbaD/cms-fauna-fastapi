@@ -62,6 +62,7 @@ db.sqlite3
 db.sqlite3-journal
 
 # Flask stuff:
+temp_auto_push.bat
 instance/
 .webassets-cache
 
@@ -127,3 +128,6 @@ dmypy.json
 
 # Pyre type checker
 .pyre/
+.gitignore
+temp_interactive_push.bat
+branch_structure.json
